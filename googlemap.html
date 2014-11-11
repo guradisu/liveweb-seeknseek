@@ -11,6 +11,7 @@
         <div id="googlemap"></div>
 <!-- ============= SCRIPTS BELOW ==================-->
         <script src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key="></script> 
         <script type="text/javascript">
 
   var mylat, mylong;
@@ -42,45 +43,31 @@
     return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
   }
 
-
-
   //============== SOCKET.IO ======================
   var socket = io.connect('104.131.186.32:8080/');
 
   socket.on('connect', function() {
     console.log("Connected");
+  });
 
-    //============== GEOLOCATION ====================
+  //============== GEOLOCATION ====================
+  document.addEventListener("DOMContentLoaded",function(){
 
-    if (navigator.geolocation) {
-          //alert("Allowed");
+    function startMap(){
+      socket.on('receivecoords',function(latitude,longitude){
+        console.log(latitude+" "+longitude);
+        var location = new google.maps.LatLng(latitude,longitude);
 
-      navigator.geolocation.watchPosition(successCallback, errorCallback, {});
-
-      function successCallback(currentPosition) {
-          
-        mylat = currentPosition.coords.latitude;
-        mylong = currentPosition.coords.longitude;
-
-        socket.emit('havecoords',mylat,mylong);
-        console.log("emitting coordinates");
-   
-        var mapElem = document.getElementById('googlemap');
-        mapElem.innerHTML = mylat + " " + mylong;
-        //mapElem.innerHTML = '<img src="http://maps.googleapis.com/maps/api/staticmap?markers=' + mylat + ',' + mylong + '&zoom=20&size=300x300&sensor=false" />';   
-
-      }
-
-      function errorCallback(e) {
-        alert(e);
-      }
-
-    } else {
-          //alert("Not Allowed");
+        var map = new google.maps.Map(document.getElementById('googlemap'),{center:location, zoom: .5, disableDefaultUI:true});
+      });
     }
 
+    google.maps.event.addDomListener(window, 'load', startMap);
+
+    startMap();
 
   });
+
         </script>
     </body>
 </html>

@@ -45,13 +45,15 @@ io.sockets.on('connection',function(socket){
   connectedSockets.push(socket);
   console.log("Connected clients: "+connectedSockets.length);
 
+  socket.on('havecoords',function(latitude,longitude){
+    console.log(latitude+" "+longitude);
+    socket.broadcast.emit('receivecoords',latitude,longitude);
+  })
+
   socket.on('disconnect',function(){
-    for (var i=0;i<connectedSockets.length;i++){
-      if (connectedSockets[i]===socket){
-        connectedSockets.splice(i,1);
-      }
-      break;
-    }
+    console.log("Client has disconnected");
+    var indexToRemove = connectedSockets.indexOf(socket);
+    connectedSockets.splice(indexToRemove, 1); 
     console.log("Connected clients: "+connectedSockets.length);
   });
 

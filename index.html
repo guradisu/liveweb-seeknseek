@@ -1,0 +1,54 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link rel="stylesheet" href="style.css" type="text/css"/>
+        <title></title>
+    </head>
+    <body>
+        <p>pitch, roll, yaw</p>
+        <div id="map"></div>
+<!-- ============= SCRIPTS BELOW ==================-->
+        <script src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript">
+
+  //============= PITCH ROLL YAW ======================
+  function onOrientationChange(e) {
+    var alpha = e.alpha,
+    beta = e.beta,
+    gamma = e.gamma;
+
+    var elem = document.getElementById('map');
+    if (alpha != null && beta != null && gamma != null){
+      map.innerHTML = alpha + " " + beta + " " + gamma;
+      document.body.style.backgroundColor = rgbToHex(Math.floor(alpha),Math.floor(beta),Math.floor(gamma));
+    } else {
+      map.innerHTML = "not on mobile device?"
+    }
+    console.log(Math.floor(alpha) + " " + Math.floor(beta) + " " + Math.floor(gamma));
+  }
+
+  window.addEventListener('deviceorientation', onOrientationChange, false);
+
+  function componentToHex(c) {
+    var hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+  }
+
+  function rgbToHex(r, g, b) {
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+  }
+
+
+  //============== SOCKET.IO ======================
+  var socket = io.connect('104.131.186.32:8080/');
+
+  socket.on('connect', function() {
+    console.log("Connected");
+
+
+
+  });
+        </script>
+    </body>
+</html>
